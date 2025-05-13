@@ -1,15 +1,7 @@
 import { useState } from "react";
-import type { CepData } from "../types";
+import type { CepData, DeliveryCheckerProps } from "../types";
 
-interface DeliveryCheckerProps {
-  cepData: CepData | null;
-  setCepData: (data: CepData | null) => void;
-}
-
-export const DeliveryChecker: React.FC<DeliveryCheckerProps> = ({
-  cepData,
-  setCepData,
-}) => {
+export function DeliveryChecker({ cepData, setCepData }: DeliveryCheckerProps) {
   const [cep, setCep] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [inputError, setInputError] = useState<string>("");
@@ -23,10 +15,13 @@ export const DeliveryChecker: React.FC<DeliveryCheckerProps> = ({
 
     try {
       const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      
       const data: CepData = await res.json();
+
       if (data.erro) {
         throw new Error("CEP não encontrado");
       }
+
       setCepData(data);
     } catch (error) {
       setError((error as Error).message);
@@ -52,8 +47,8 @@ export const DeliveryChecker: React.FC<DeliveryCheckerProps> = ({
           disabled={cep.length !== 8}
           className={
             cep.length !== 8
-              ? "bg-black/50 opacity-50 px-4 py-2 rounded"
-              : "bg-black opacity-100 text-white px-4 py-2 rounded"
+              ? "bg-black/50 opacity-50 px-4 py-2 rounded cursor-not-allowed"
+              : "bg-black opacity-100 text-white px-4 py-2 rounded cursor-pointer"
           }
         >
           Verificar
@@ -72,4 +67,4 @@ export const DeliveryChecker: React.FC<DeliveryCheckerProps> = ({
       {error && <p className="text-red-500">{error}</p>}
     </div>
   );
-};
+}

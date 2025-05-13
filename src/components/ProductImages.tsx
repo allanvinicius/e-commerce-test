@@ -7,11 +7,11 @@ export function ProductImages({
 }: ProductImagesProps) {
   return (
     <div className="flex flex-col items-start gap-4">
-      <div className="flex items-center justify-center w-full max-w-[672px] h-[300px] md:h-full">
+      <div className="flex items-center justify-center w-full max-w-[672px] h-[300px] md:h-full rounded-md shadow overflow-hidden">
         <img
           src={selectedImage}
           alt="Produto"
-          className="w-full h-full aspect-square object-cover rounded-md shadow"
+          className="size-full object-cover"
         />
       </div>
 

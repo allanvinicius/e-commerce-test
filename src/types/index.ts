@@ -12,6 +12,11 @@ export interface CepData {
   erro?: boolean;
 }
 
+export interface DeliveryCheckerProps {
+  cepData: CepData | null;
+  setCepData: (data: CepData | null) => void;
+}
+
 export interface ProductImagesProps {
   images: string[];
   selectedImage: string;
