@@ -7,7 +7,7 @@ export function VariantSelector({
   onChange,
 }: VariantSelectorProps) {
   return (
-    <div>
+    <div className="flex flex-col">
       <p className="font-semibold">{label}:</p>
       <div className="flex gap-2 flex-wrap mt-1">
         {options.map((option) => (

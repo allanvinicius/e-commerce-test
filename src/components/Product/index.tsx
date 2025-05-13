@@ -89,7 +89,7 @@ export function Product() {
 
   return (
     <main>
-      <div className="w-full max-w-[1246px] p-4 mx-auto flex items-start gap-8">
+      <div className="w-full max-w-[1246px] p-4 mx-auto md:flex items-start gap-8">
         <ProductImages
           images={
             selectedColor && productData.variants[selectedColor]
@@ -100,7 +100,7 @@ export function Product() {
           onSelect={setSelectedImage}
         />
 
-        <div className="space-y-4">
+        <div className="space-y-4 mt-10 md:mt-0">
           <h1 className="text-2xl font-bold max-w-[500px]">
             {productData.title} - {selectedColor}
           </h1>

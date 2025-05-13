@@ -6,12 +6,14 @@ export function ProductImages({
   onSelect,
 }: ProductImagesProps) {
   return (
-    <div className="space-y-4">
-      <img
-        src={selectedImage}
-        alt="Produto"
-        className="w-full aspect-square object-cover rounded-md shadow"
-      />
+    <div className="flex flex-col items-start gap-4">
+      <div className="flex items-center justify-center w-full max-w-[672px] h-[300px] md:h-full">
+        <img
+          src={selectedImage}
+          alt="Produto"
+          className="w-full h-full aspect-square object-cover rounded-md shadow"
+        />
+      </div>
 
       <div className="flex gap-2">
         {images.map((img, index) => (
@@ -19,7 +21,7 @@ export function ProductImages({
             key={index}
             src={img}
             alt={`Miniatura ${index}`}
-            className={`w-20 h-20 object-cover rounded cursor-pointer border ${
+            className={`size-16 object-cover rounded cursor-pointer border ${
               selectedImage === img ? "border-black" : "border-gray-300"
             }`}
             onClick={() => onSelect(img)}
