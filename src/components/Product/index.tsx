@@ -69,11 +69,13 @@ export function Product() {
     if (selectedColor && productData.variants[selectedColor]) {
       const images = productData.variants[selectedColor].images;
 
-      if (images.length > 0 && selectedImage !== images[0]) {
+      if (images.length > 0) {
         setSelectedImage(images[0]);
       }
     }
+  }, [selectedColor]);
 
+  useEffect(() => {
     const state: ProductState = {
       selectedImage,
       selectedSize,
@@ -89,7 +91,7 @@ export function Product() {
 
   return (
     <main>
-      <div className="w-full max-w-[1246px] p-4 mx-auto md:flex items-start gap-8">
+      <div className="w-full max-w-[1246px] p-4 md:p-8 mx-auto md:flex items-start gap-8">
         <ProductImages
           images={
             selectedColor && productData.variants[selectedColor]
