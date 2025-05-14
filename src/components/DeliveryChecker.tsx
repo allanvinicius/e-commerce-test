@@ -15,7 +15,7 @@ export function DeliveryChecker({ cepData, setCepData }: DeliveryCheckerProps) {
 
     try {
       const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-      
+
       const data: CepData = await res.json();
 
       if (data.erro) {
@@ -26,6 +26,8 @@ export function DeliveryChecker({ cepData, setCepData }: DeliveryCheckerProps) {
     } catch (error) {
       setError((error as Error).message);
     }
+
+    setCep("");
   }
 
   return (
@@ -56,15 +58,15 @@ export function DeliveryChecker({ cepData, setCepData }: DeliveryCheckerProps) {
       </div>
 
       {cepData && (
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-gray-700 max-w-[400px]">
           {cepData.logradouro}, {cepData.bairro} - {cepData.localidade}/
           {cepData.uf}
         </p>
       )}
 
-      {inputError && <p className="text-red-500">{inputError}</p>}
-
       {error && <p className="text-red-500">{error}</p>}
+
+      {inputError && <p className="text-red-500">{inputError}</p>}
     </div>
   );
 }
