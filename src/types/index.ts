@@ -18,36 +18,27 @@ export interface DeliveryCheckerProps {
 }
 
 export interface ProductImagesProps {
-  images: string[];
   selectedImage: string;
-  onSelect: (image: string) => void;
 }
-
-export interface ProductState {
-  selectedImage: string;
-  selectedSize: string;
-  selectedColor: string;
-  cepData: CepData | null;
-}
-
 export interface VariantSelectorProps {
   label: string;
   options: string[];
-  selected: string;
   onChange: (value: string) => void;
 }
-
-export interface ProductVariant {
-  images: string[];
+export interface Variant {
+  id: number;
+  options:  Record<string, string>;
+  price: number;
+  inventory_quantity: number;
+  values: string[];
 }
 
-export interface ProductData {
+export interface Product {
+  id: number;
   title: string;
-  price: number;
-  variants: {
-    [color: string]: ProductVariant;
-  };
-  images: string[];
-  sizes: string[];
-  colors: string[];
+  image_url: string;
+  currency: string;
+  options: string[];
+  values: Record<string, string[]>;
+  variants: Variant[];
 }

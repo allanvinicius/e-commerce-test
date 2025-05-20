@@ -1,132 +1,153 @@
 import { useEffect, useState } from "react";
 import { ProductImages } from "../ProductImages";
 import { VariantSelector } from "../VariantSelector";
-import { DeliveryChecker } from "../DeliveryChecker";
-
-import type { CepData, ProductData, ProductState } from "../../types";
-
-import image1 from "../../assets/imagem-1.webp";
-import image2 from "../../assets/imagem-2.webp";
-import image3 from "../../assets/imagem-3.webp";
-import image4 from "../../assets/image-4.webp";
-import image5 from "../../assets/image-5.webp";
-import image6 from "../../assets/image-6.webp";
-import image7 from "../../assets/image-7.webp";
-import image8 from "../../assets/image-8.webp";
-
-const productData: ProductData = {
-  title: "Tênis Nike Downshifter 13 Masculino",
-  price: 322.99,
-  variants: {
-    "Preto e Branco": {
-      images: [image1, image2, image3, image7],
-    },
-    Azul: {
-      images: [image4, image5, image6, image8],
-    },
-  },
-  images: [image1, image2, image3, image7],
-  sizes: ["37", "38", "39", "40", "41", "42"],
-  colors: ["Preto e Branco", "Azul"],
-};
+import type { Product, Variant } from "../../types";
 
 export function Product() {
-  const [selectedImage, setSelectedImage] = useState<string>(
-    productData.images[0]
-  );
+  const [products, setProducts] = useState<Product>();
 
-  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
 
-  const [selectedColor, setSelectedColor] = useState<string>(
-    productData.colors[0]
-  );
-
-  const [cepData, setCepData] = useState<CepData | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
-    const stored = localStorage.getItem("product");
-
-    if (stored) {
-      const { data, timestamp } = JSON.parse(stored);
-
-      if (Date.now() - timestamp < 15 * 60 * 1000) {
-        setSelectedSize(data.selectedSize);
-        setSelectedColor(data.selectedColor);
-        setCepData(data.cepData);
-
-        const variantImages = productData.variants[data.selectedColor]?.images;
-
-        if (variantImages?.includes(data.selectedImage)) {
-          setSelectedImage(data.selectedImage);
-        } else if (variantImages?.length) {
-          setSelectedImage(variantImages[0]);
+    async function fetchData() {
+      try {
+        const response = await fetch(
+          "https://empreender.nyc3.cdn.digitaloceanspaces.com/static/teste-prod-1.json"
+        );
+        
+        if (!response.ok) {
+          throw new Error("Erro na requisição");
         }
+
+        const data = await response.json();
+
+        const values: { [key: string]: string[] } = {};
+
+        data.options.forEach((opt: string, index: number) => {
+          values[opt] = data.values[index] || [];
+        });
+
+        setProducts({ ...data, values });
+
+        setSelectedVariant(data.variants[0]);
+      } catch (error) {
+        console.error("Erro ao buscar os produtos:", error);
       }
     }
+
+    fetchData();
   }, []);
 
   useEffect(() => {
-    if (selectedColor && productData.variants[selectedColor]) {
-      const images = productData.variants[selectedColor].images;
+    if (!products) return;
 
-      if (images.length > 0) {
-        setSelectedImage(images[0]);
-      }
-    }
-  }, [selectedColor]);
+    if (Object.keys(selectedOptions).length < products.options.length) return;
 
-  useEffect(() => {
-    const state: ProductState = {
-      selectedImage,
-      selectedSize,
-      selectedColor,
-      cepData,
-    };
+    const selectedValues = products.options.map((opt) => selectedOptions[opt]);
 
-    localStorage.setItem(
-      "product",
-      JSON.stringify({ data: state, timestamp: Date.now() })
+    const variant = products.variants.find(
+      (v) =>
+        JSON.stringify(v.values) === JSON.stringify(selectedValues) &&
+        v.inventory_quantity > 0
     );
-  }, [selectedImage, selectedSize, selectedColor, cepData]);
+
+    setSelectedVariant(variant ?? null);
+  }, [selectedOptions, products]);
+
+  async function handleBuy(product: Product, variant: Variant) {
+    try {
+      const payload = [
+        {
+          values: Object.values(variant.options),
+          quantity: variant.inventory_quantity,
+          product_id: product.id,
+          variant_id: variant.id,
+        },
+      ];
+
+      const response = await fetch(
+        "https://app.landingpage.com.br/api/checkoutloja/LPL2gc/5d87eb644e5631bc6a03f1e43a804e1c",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
+      console.log("Resposta do checkout:", data);
+
+      alert("Compra iniciada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao iniciar compra:", error);
+      alert("Erro ao comprar. Tente novamente.");
+    }
+  }
 
   return (
     <main>
       <div className="w-full max-w-[1246px] p-4 md:p-8 mx-auto md:flex items-start gap-8">
-        <ProductImages
-          images={
-            selectedColor && productData.variants[selectedColor]
-              ? productData.variants[selectedColor].images
-              : []
-          }
-          selectedImage={selectedImage}
-          onSelect={setSelectedImage}
-        />
+        {products && (
+          <>
+            <ProductImages selectedImage={products.image_url} />
 
-        <div className="space-y-4 mt-10 md:mt-0">
-          <h1 className="text-2xl font-bold max-w-[500px]">
-            {productData.title} - {selectedColor}
-          </h1>
+            <div className="space-y-4 mt-10 md:mt-0">
+              <h1 className="text-2xl font-bold max-w-[500px]">
+                {products.title}
+              </h1>
 
-          <p className="text-2xl text-green-600">
-            R$ {productData.price.toFixed(2)}
-          </p>
+              <p className="text-2xl text-green-600">
+                {selectedVariant ? `R$ ${selectedVariant.price}` : ""}
+              </p>
 
-          <VariantSelector
-            label="Tamanho"
-            options={productData.sizes}
-            selected={selectedSize}
-            onChange={setSelectedSize}
-          />
+              {products &&
+                products.options.map((opt) => (
+                  <VariantSelector
+                    key={opt}
+                    label={opt}
+                    options={products.values[opt]}
+                    onChange={(val) =>
+                      setSelectedOptions((prev) => ({
+                        ...prev,
+                        [opt]: val,
+                      }))
+                    }
+                  />
+                ))}
 
-          <VariantSelector
-            label="Cor"
-            options={productData.colors}
-            selected={selectedColor}
-            onChange={setSelectedColor}
-          />
+              <p className="mt-2 text-sm">
+                {selectedVariant
+                  ? "✅ Em estoque"
+                  : Object.keys(selectedOptions).length ===
+                    products.options.length
+                  ? "❌ Sem estoque"
+                  : ""}
+              </p>
 
-          <DeliveryChecker cepData={cepData} setCepData={setCepData} />
-        </div>
+              <button
+                disabled={!selectedVariant}
+                onClick={() =>
+                  products &&
+                  selectedVariant &&
+                  handleBuy(products, selectedVariant)
+                }
+                className={`mt-4 px-4 py-2 rounded text-white ${
+                  selectedVariant
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-gray-400 cursor-not-allowed"
+                }`}
+              >
+                Comprar
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </main>
   );

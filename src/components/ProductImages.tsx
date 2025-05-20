@@ -1,9 +1,9 @@
 import type { ProductImagesProps } from "../types";
 
 export function ProductImages({
-  images,
+  // images,
   selectedImage,
-  onSelect,
+  // onSelect,
 }: ProductImagesProps) {
   return (
     <div className="flex flex-col items-start gap-4">
@@ -15,7 +15,7 @@ export function ProductImages({
         />
       </div>
 
-      <div className="flex gap-2">
+      {/* <div className="flex gap-2">
         {images.map((img, index) => (
           <img
             key={index}
@@ -27,7 +27,7 @@ export function ProductImages({
             onClick={() => onSelect(img)}
           />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }
