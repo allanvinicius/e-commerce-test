@@ -18,7 +18,7 @@ export function Product() {
         const response = await fetch(
           "https://empreender.nyc3.cdn.digitaloceanspaces.com/static/teste-prod-1.json"
         );
-        
+
         if (!response.ok) {
           throw new Error("Erro na requisição");
         }
@@ -122,11 +122,11 @@ export function Product() {
                 ))}
 
               <p className="mt-2 text-sm">
-                {selectedVariant
-                  ? "✅ Em estoque"
-                  : Object.keys(selectedOptions).length ===
-                    products.options.length
-                  ? "❌ Sem estoque"
+                {products &&
+                Object.keys(selectedOptions).length === products.options.length
+                  ? selectedVariant
+                    ? "✅ Em estoque"
+                    : "❌ Sem estoque"
                   : ""}
               </p>
 
